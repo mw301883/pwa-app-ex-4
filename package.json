@@ -1,0 +1,24 @@
+{
+  "name": "pwa-app-ex-4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mw301883/pwa-app-ex-4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mw301883/pwa-app-ex-4/issues"
+  },
+  "homepage": "https://github.com/mw301883/pwa-app-ex-4#readme",
+  "dependencies": {
+    "idb": "^8.0.3"
+  }
+}

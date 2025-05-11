@@ -8,7 +8,6 @@ const urlsToCache = [
     '/db.js',
     '/icons/icon_192x192.ico',
     '/icons/icon_512x512.png',
-    '/offline.html',
 ];
 
 self.addEventListener('install', (e) => {
@@ -17,10 +16,17 @@ self.addEventListener('install', (e) => {
     );
 });
 
+
 self.addEventListener('fetch', (e) => {
+    if (e.request.url.includes('api.weatherapi.com')) {
+        return;
+    }
+
     e.respondWith(
         caches.match(e.request).then((res) => {
-            return res || fetch(e.request).catch(() => caches.match('/offline.html'));
+            return res || fetch(e.request);
+        }).catch((err) => {
+            console.warn('Offline and not cached:', e.request.url);
         })
     );
 });

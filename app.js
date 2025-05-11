@@ -66,14 +66,25 @@ async function render() {
 
         const selectedId = parseInt(localStorage.getItem('selectedLocationId'));
         const locationToUse = locations.find(loc => loc.id === selectedId) || locations[0];
-        const data = await fetchWeather(locationToUse.name);
+        let data;
+        try {
+            data = await fetchWeather(locationToUse.name);
+        } catch (error) {
+            console.warn("No internet or API error: ", error);
+            document.getElementById('forecastData').innerHTML = `
+    <p><strong>No internet connection.</strong></p>
+    <p>The weather forecast is unavailable in offline mode.</p>
+     `;
+            return;
+        }
+
 
         if (data.error) {
             console.log(data.error);
             document.getElementById('forecastData').innerHTML = `
         <p><strong>Sorry, could not fetch weatherapi.com API response.</strong></p>
     `;
-            return ;
+            return;
         }
 
         document.getElementById('forecastData').innerHTML = `

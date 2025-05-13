@@ -1,7 +1,7 @@
 {
   "name": "Portainer Weather",
   "short_name": "Weather",
-  "start_url": "/weather-pwa/index.html",
+  "start_url": "/pwa-app-ex-4/#home",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2196f3",

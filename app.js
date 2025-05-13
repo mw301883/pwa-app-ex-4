@@ -66,35 +66,63 @@ async function render() {
 
         const selectedId = parseInt(localStorage.getItem('selectedLocationId'));
         const locationToUse = locations.find(loc => loc.id === selectedId) || locations[0];
+
         let data;
+        let wasOffline = false;
+
         try {
             data = await fetchWeather(locationToUse.name);
+            if (!navigator.onLine) {
+                wasOffline = true;
+            }
+
         } catch (error) {
-            console.warn("No internet or API error: ", error);
-            document.getElementById('forecastData').innerHTML = `
-    <p><strong>No internet connection.</strong></p>
-    <p>The weather forecast is unavailable in offline mode.</p>
-     `;
-            return;
+            console.warn("Error fetching weather data: ", error);
+
+            const cachedData = localStorage.getItem(`weatherData_${locationToUse.name.toLowerCase()}`);
+            if (cachedData) {
+                data = JSON.parse(cachedData).data;
+                wasOffline = true;
+            }
         }
 
-
-        if (data.error) {
+        if (data && data.error) {
             console.log(data.error);
             document.getElementById('forecastData').innerHTML = `
-        <p><strong>Sorry, could not fetch weatherapi.com API response.</strong></p>
-    `;
+                <p><strong>Sorry, we couldn't fetch weather data.</strong></p>
+            `;
             return;
         }
 
         document.getElementById('forecastData').innerHTML = `
-        <p><strong>City:</strong> ${data.location.name}, ${data.location.country}</p>
-        <p><strong>Temperature:</strong> ${data.current.temp_c} °C</p>
-        <p><strong>Weather:</strong> ${data.current.condition.text}</p>
-        <img src="${data.current.condition.icon}" alt="${data.current.condition.text}">
-        <p><strong>Wind:</strong> ${data.current.wind_kph} km/h ${data.current.wind_dir}</p>
-        <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
-    `;
+            <p><strong>City:</strong> ${data.location.name}, ${data.location.country}</p>
+            <p><strong>Temperature:</strong> ${data.current.temp_c} °C</p>
+            <p><strong>Weather:</strong> ${data.current.condition.text}</p>
+            <img src="${data.current.condition.icon}" alt="${data.current.condition.text}">
+            <p><strong>Wind:</strong> ${data.current.wind_kph} km/h ${data.current.wind_dir}</p>
+            <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
+        `;
+
+        if (wasOffline) {
+            document.getElementById('forecastData').insertAdjacentHTML('beforeend', `<p><em>Showing cached data (offline)</em></p>`);
+        }
+
+        localStorage.setItem(`weatherData_${locationToUse.name.toLowerCase()}`, JSON.stringify({
+            timestamp: Date.now(),
+            data
+        }));
+
         localStorage.removeItem('selectedLocationId');
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('menu-toggle');
+        const links = document.getElementById('nav-links');
+
+        if (toggle && links) {
+            toggle.addEventListener('click', () => {
+                links.classList.toggle('show');
+            });
+        }
+    });
 }
